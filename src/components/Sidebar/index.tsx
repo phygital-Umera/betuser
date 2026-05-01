@@ -1,49 +1,68 @@
-import { SidebarProps } from '@/types';
-import { Link, useLocation } from '@tanstack/react-router';
+import { 
+  Home, 
+  Play, 
+  Vote, 
+  Trophy, 
+  Dribbble, 
+  Gamepad2, 
+  Headphones, 
+  HelpCircle,
+  Menu,
+  ChevronDown,
+  ChevronLeft,
+  Moon,
+  Download
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import {
-  FaArrowLeftLong
-} from 'react-icons/fa6';
-import { IoIosArrowDown } from 'react-icons/io';
-import {
-  PiSquaresFourLight
-} from 'react-icons/pi';
-import SmallLogo from '../../assets/images/logo/menubg.png';
-import Logo from '../../assets/images/logo/sidebar-logo.png';
 import SidebarLinkGroup from './SidebarLinkGroup';
+import { motion, AnimatePresence } from 'framer-motion';
 
-import { useAuthContext } from '@/context/AuthContext';
+interface SidebarProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (arg: boolean) => void;
+}
 
-
-const Sidebar = ({sidebarOpen, setSidebarOpen}: SidebarProps) => {
-  const location = useLocation();
-  const {pathname} = location;
-  const {role} = useAuthContext();
-
+const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+  // Using simple navigation state for the demo
+  const [pathname, setPathname] = useState('/');
+  
   const sidebarRoutes = [
-    {
-      label: 'Home ',
-      path: '/',
-      icon: <PiSquaresFourLight size={22} />,
+    { label: 'Home', path: '/', icon: <Home size={22} /> },
+    { label: 'In-Play', path: '/in-play', icon: <Play size={22} /> },
+    { label: 'Election', path: '/election', icon: <Vote size={22} /> },
+    { label: 'IPL 2026', path: '/ipl', icon: <Trophy size={22} /> },
+    { 
+      label: 'Sports', 
+      path: '/sports', 
+      icon: <Dribbble size={22} />,
+      subRoutes: [
+        { label: 'Cricket', path: '/sports/cricket' },
+        { label: 'Football', path: '/sports/football' },
+        { label: 'Tennis', path: '/sports/tennis' },
+      ]
     },
+    { 
+      label: 'Casino', 
+      path: '/casino', 
+      icon: <Gamepad2 size={22} />,
+      subRoutes: [
+        { label: 'Live Casino', path: '/casino/live' },
+        { label: 'Slot Games', path: '/casino/slots' },
+      ]
+    },
+    { label: 'Supports', path: '/supports', icon: <Headphones size={22} /> },
+    { label: 'FAQ\'s', path: '/faq', icon: <HelpCircle size={22} /> },
   ];
 
   const trigger = useRef<HTMLButtonElement>(null);
   const sidebar = useRef<HTMLDivElement>(null);
 
-  const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
-  const [sidebarExpanded, setSidebarExpanded] = useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
-  );
-
-  // State to track whether the sidebar is being hovered
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  // Ref for the timeout
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle hover events
   const handleMouseEnter = () => {
-    // Clear any pending timeout to close the sidebar
+    if (window.innerWidth < 1024) return;
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
@@ -53,104 +72,86 @@ const Sidebar = ({sidebarOpen, setSidebarOpen}: SidebarProps) => {
   };
 
   const handleMouseLeave = () => {
-    // Add a delay before closing the sidebar
+    if (window.innerWidth < 1024) return;
     closeTimeoutRef.current = setTimeout(() => {
       setIsHovered(false);
       setSidebarOpen(false);
-    }, 300); // 300ms delay before closing
+    }, 300);
   };
 
-  // Handle click event for mobile (keep original functionality for smaller screens)
+  // Mobile click outside to close
   useEffect(() => {
     const clickHandler = (event: MouseEvent) => {
-      const {target} = event;
+      const { target } = event;
       if (!sidebar.current || !trigger.current) return;
-      if (
-        !sidebarOpen ||
-        sidebar.current.contains(target as Node) ||
-        trigger.current.contains(target as Node)
-      )
-        return;
-      setSidebarOpen(false);
+      if (!sidebarOpen || sidebar.current.contains(target as Node) || trigger.current.contains(target as Node)) return;
+      if (window.innerWidth < 1024) setSidebarOpen(false);
     };
     document.addEventListener('click', clickHandler);
     return () => document.removeEventListener('click', clickHandler);
-  });
+  }, [sidebarOpen]);
 
+  // Escape key to close
   useEffect(() => {
-    const keyHandler = ({keyCode}: KeyboardEvent) => {
+    const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!sidebarOpen || keyCode !== 27) return;
       setSidebarOpen(false);
     };
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
-  });
-
-  useEffect(() => {
-    localStorage.setItem('sidebar-expanded', sidebarExpanded.toString());
-    if (sidebarExpanded) {
-      document.querySelector('body')?.classList.add('sidebar-expanded');
-    } else {
-      document.querySelector('body')?.classList.remove('sidebar-expanded');
-    }
-  }, [sidebarExpanded]);
-
-  // Clean up the timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [sidebarOpen]);
 
   return (
     <aside
       ref={sidebar}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-black duration-300 ease-in-out dark:bg-boxdark lg:static ${
-        sidebarOpen ? 'w-72.5' : 'w-20'
+      className={`fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-[#0a0a0a] shadow-2xl transition-all duration-300 ease-in-out dark:bg-boxdark lg:static ${
+        sidebarOpen ? 'w-72' : 'w-20'
       } ${
-        sidebarOpen || sidebarExpanded || isHovered
+        sidebarOpen || isHovered
           ? 'translate-x-0'
-          : '-translate-x-full md:translate-x-0'
+          : '-translate-x-full lg:translate-x-0'
       }`}
     >
       {/* SIDEBAR HEADER */}
-      <div className="flex items-center justify-between px-4 py-5 lg:py-6">
-        <button
-          className="flex items-center gap-2"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? (
-            <div className="flex items-center gap-2">
-              <img src={Logo} alt="Logo" className="h-18" />
-            </div>
-          ) : (
-            <div className="flex items-center rounded-full bg-white p-1">
-              <img src={SmallLogo} alt="Logo" className="h-10 w-10" />
-            </div>
+      <div className="flex items-center justify-between px-4 h-16 border-b border-white/5">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-red-600 shadow-lg shadow-orange-500/20">
+            <span className="text-xl font-bold text-white">S</span>
+          </div>
+          {sidebarOpen && (
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex flex-col whitespace-nowrap"
+            >
+              <span className="text-sm font-bold tracking-tight text-white uppercase italic">Swastik</span>
+              <span className="text-[10px] text-gray-400 uppercase leading-none">Online Book</span>
+            </motion.div>
           )}
-        </button>
+        </div>
+        
         <button
           ref={trigger}
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="lg:hidden"
+          className="lg:hidden text-white hover:bg-white/10 p-2 rounded-full transition-colors"
         >
-          <FaArrowLeftLong className="text-white" size={20} />
+          <ChevronLeft size={24} />
         </button>
       </div>
 
       {/* SIDEBAR MENU */}
-      <div className="no-scrollbar flex flex-col overflow-y-auto px-2 duration-300 ease-linear">
-        <nav className="mt-4 space-y-1 p-2">
-          <ul>
-            {sidebarRoutes.map((route, index) =>
-              route.subRoutes ? (
+      <div className="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
+        <nav>
+          <ul className="space-y-1.5">
+            {sidebarRoutes.map((route, index) => {
+              const isActive = pathname === route.path || (route.subRoutes && pathname.startsWith(route.path));
+              
+              return route.subRoutes ? (
                 <SidebarLinkGroup
                   key={index}
-                  activeCondition={pathname.includes(route.path!)}
+                  activeCondition={isActive}
                 >
                   {(handleClick, open) => (
                     <>
@@ -162,69 +163,88 @@ const Sidebar = ({sidebarOpen, setSidebarOpen}: SidebarProps) => {
                           } else {
                             setSidebarOpen(true);
                           }
-                          // Ensure sidebar stays open when clicking on subroute buttons
                           handleMouseEnter();
                         }}
-                        className={`group flex w-full items-center gap-2.5 rounded px-3 py-2 text-sm font-medium text-white hover:bg-graydark ${
-                          pathname.includes(route.path!) ? 'bg-graydark' : ''
+                        className={`group flex w-full items-center gap-3.5 rounded-xl px-3 py-3 text-sm font-semibold transition-all duration-200 ${
+                          isActive 
+                            ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg shadow-orange-500/20' 
+                            : 'text-gray-400 hover:bg-white/5 hover:text-white'
                         }`}
                       >
-                        {route.icon}
-                        {sidebarOpen && route.label}
+                        <span className={`${isActive ? 'text-white' : 'text-orange-500 group-hover:text-white'}`}>
+                          {route.icon}
+                        </span>
                         {sidebarOpen && (
-                          <IoIosArrowDown
-                            className={`ml-auto transform duration-200 ${
-                              open ? 'rotate-180' : ''
-                            }`}
+                          <span className="flex-1 text-left whitespace-nowrap">{route.label}</span>
+                        )}
+                        {sidebarOpen && (
+                          <ChevronDown
+                            size={16}
+                            className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
                           />
                         )}
                       </button>
-                      <div
-                        className={`${
-                          sidebarOpen && open ? 'block' : 'hidden'
-                        } pl-6`}
-                        onMouseEnter={handleMouseEnter}
-                      >
-                        {route.subRoutes.map((subRoute, subIndex) => (
-                          <Link
-                            key={subIndex}
-                            to={subRoute.path}
-                            onClick={(e) => {
-                              // Don't close sidebar when clicking a sublink
-                              e.stopPropagation();
-                            }}
-                            className="block py-1.5 text-sm text-bodydark2 hover:text-white"
-                            activeProps={{
-                              className: 'text-white font-semibold',
-                            }}
-                          >
-                            {subRoute.label}
-                          </Link>
-                        ))}
+                      
+                      <div className={`overflow-hidden transition-all duration-300 ${sidebarOpen && open ? 'max-h-96 mt-1' : 'max-h-0'}`}>
+                        <ul className="pl-11 space-y-1">
+                          {route.subRoutes.map((subRoute, subIndex) => (
+                            <li key={subIndex}>
+                              <button
+                                onClick={() => setPathname(subRoute.path)}
+                                className={`block w-full py-2 text-left text-xs font-medium transition-colors ${
+                                  pathname === subRoute.path ? 'text-white' : 'text-gray-500 hover:text-white'
+                                }`}
+                              >
+                                {subRoute.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </>
                   )}
                 </SidebarLinkGroup>
               ) : (
                 <li key={index}>
-                  <Link
-                    to={route.path}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Navigate but don't close sidebar immediately
-                    }}
-                    className={`group flex items-center gap-2.5 rounded px-3 py-2 text-sm font-medium text-white hover:bg-graydark ${
-                      pathname.includes(route.path) ? 'bg-graydark' : ''
+                  <button
+                    onClick={() => setPathname(route.path)}
+                    className={`group flex w-full items-center gap-3.5 rounded-xl px-3 py-3 text-sm font-semibold transition-all duration-200 ${
+                      isActive 
+                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg shadow-orange-500/20' 
+                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
-                    {route.icon}
-                    {sidebarOpen && route.label}
-                  </Link>
+                    <span className={`${isActive ? 'text-white' : 'text-orange-500 group-hover:text-white'}`}>
+                      {route.icon}
+                    </span>
+                    {sidebarOpen && <span className="whitespace-nowrap">{route.label}</span>}
+                  </button>
                 </li>
-              ),
-            )}
+              );
+            })}
           </ul>
         </nav>
+
+        {/* Action Buttons */}
+        <div className="pt-8 space-y-4">
+          <button className={`flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900/50 border border-white/5 py-3 hover:bg-gray-800 transition-all ${sidebarOpen ? 'px-4' : 'px-0'}`}>
+            <Download size={20} className="text-orange-500" />
+            {sidebarOpen && <span className="text-sm font-bold text-white whitespace-nowrap">Download APK</span>}
+          </button>
+
+          <div className={`flex items-center gap-3 rounded-xl bg-gray-900/30 p-3 ${sidebarOpen ? 'justify-between' : 'justify-center'}`}>
+            <div className="flex items-center gap-3 overflow-hidden">
+               <Moon size={20} className="text-gray-500 shrink-0" />
+               {sidebarOpen && <span className="text-sm font-medium text-gray-400 whitespace-nowrap">Dark Theme</span>}
+            </div>
+            {sidebarOpen && (
+              <div className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full bg-orange-600/30 ring-1 ring-orange-500/50">
+                <span className="absolute right-1 leading-none text-orange-500 text-[10px]">ON</span>
+                <div className="h-3 w-3 translate-x-5 rounded-full bg-orange-500 shadow-sm" />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </aside>
   );
