@@ -1,6 +1,36 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {Link, useLocation} from '@tanstack/react-router';
 import {motion, AnimatePresence} from 'framer-motion';
+import {
+  MdHome,
+  MdPlayArrow,
+  MdHowToVote,
+  MdEmojiEvents,
+  MdSportsCricket,
+  MdCasino,
+  MdSupportAgent,
+  MdHelp,
+  MdLogout,
+  MdExpandMore,
+  MdChevronLeft,
+  MdChevronRight,
+  MdAccountBalanceWallet,
+  MdHistory,
+  MdTrendingUp,
+  MdSettings,
+  MdBuild,
+  MdCategory,
+  MdGamepad,
+} from 'react-icons/md';
+import {
+  FaFutbol,
+  FaHorseHead,
+  FaDog,
+  FaPlus,
+  FaGamepad,
+  FaTennisBall,
+} from 'react-icons/fa';
+import {GiCricketBat, GiTennisRacket} from 'react-icons/gi';
 
 interface SidebarProps {
   onCollapseChange?: (collapsed: boolean) => void;
@@ -37,7 +67,7 @@ const Sidebar = ({
   const [isMobileState, setIsMobileState] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(
-    new Set(['Sports', 'Cricket', 'Indian Premier League']),
+    new Set(['Sports']),
   );
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -88,8 +118,9 @@ const Sidebar = ({
     if (onCollapseChange) onCollapseChange(isCollapsed);
   }, [isCollapsed, onCollapseChange]);
 
-  const toggleSubmenu = (label: string) => {
-    if (isCollapsed) return;
+  const toggleSubmenu = (label: string, e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    if (isCollapsed && !isMobileDevice) return;
     setExpandedMenus((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(label)) newSet.delete(label);
@@ -98,7 +129,7 @@ const Sidebar = ({
     });
   };
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (path: string) => {
     if (isMobileDevice) {
       setIsMobileMenuOpen(false);
       if (setSidebarOpen) setSidebarOpen(false);
@@ -114,79 +145,31 @@ const Sidebar = ({
     window.location.href = '/signin';
   };
 
-  // Complete menu structure matching HTML
+  // Simplified menu structure - only Home, In-Play, and Sports with subroutes
   const allMenuItems: MenuItem[] = [
     {
       label: 'Home',
       path: '/',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/home-icon.png"
-          alt="home"
-          className="h-5 w-5"
-        />
-      ),
+      icon: <MdHome size={22} className="text-orange-500" />,
     },
     {
       label: 'In-Play',
       path: '/in-play',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/inplay-icon.png"
-          alt="inplay"
-          className="h-5 w-5"
-        />
-      ),
-    },
-    {
-      label: 'Election',
-      path: '/election',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/election-icon.png"
-          alt="election"
-          className="h-5 w-5"
-        />
-      ),
-    },
-    {
-      label: 'IPL 2026',
-      path: '/ipl',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/winner-icon.png"
-          alt="ipl"
-          className="h-5 w-5"
-        />
-      ),
+      icon: <MdPlayArrow size={22} className="text-red-500" />,
     },
     {
       label: 'Sports',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/sports-icon.png"
-          alt="sports"
-          className="h-5 w-5"
-        />
-      ),
+      icon: <MdSportsCricket size={22} className="text-green-600" />,
       subroutes: [
         {
           label: 'Cricket',
           path: '/sports/cricket',
-          icon: (
-            <img
-              src="https://images.rajabet.fun/newtheme/common/cricket-icon.png"
-              alt="cricket"
-              className="h-4 w-4"
-            />
-          ),
+          icon: <GiCricketBat size={18} className="text-red-600" />,
           subroutes: [
             {
               label: 'Indian Premier League',
-              path: '/sports/cricket/ipl',
-              icon: (
-                <i className="fa fa-minus-square text-gray-500 text-xs"></i>
-              ),
+              path: '/cricket/indian',
+              icon: <MdEmojiEvents size={16} className="text-yellow-600" />,
               subroutes: [
                 {
                   label: 'Indian Premier League',
@@ -210,28 +193,32 @@ const Sidebar = ({
                 },
               ],
             },
-            {label: 'County Championship', path: '/sports/cricket/county'},
+            {
+              label: 'County Championship',
+              path: '/sports/cricket/county',
+              icon: <MdCategory size={16} />,
+            },
             {
               label: 'International Twenty20 Matches',
               path: '/sports/cricket/t20',
+              icon: <MdGamepad size={16} />,
             },
-            {label: 'Pakistan Super League', path: '/sports/cricket/psl'},
+            {
+              label: 'Pakistan Super League',
+              path: '/sports/cricket/psl',
+              icon: <MdEmojiEvents size={16} />,
+            },
             {
               label: 'Womens International Twenty20 Matches',
               path: '/sports/cricket/womens-t20',
+              icon: <MdGamepad size={16} />,
             },
           ],
         },
         {
           label: 'Soccer',
           path: '/sports/soccer',
-          icon: (
-            <img
-              src="https://images.rajabet.fun/newtheme/common/soccer-icon.png"
-              alt="soccer"
-              className="h-4 w-4"
-            />
-          ),
+          icon: <FaFutbol size={18} className="text-gray-700" />,
           subroutes: [
             {label: 'Italian Serie A', path: '/sports/soccer/serie-a'},
             {label: 'Spanish La Liga', path: '/sports/soccer/la-liga'},
@@ -246,13 +233,7 @@ const Sidebar = ({
         {
           label: 'Tennis',
           path: '/sports/tennis',
-          icon: (
-            <img
-              src="https://images.rajabet.fun/newtheme/common/tennis-icon.png"
-              alt="tennis"
-              className="h-4 w-4"
-            />
-          ),
+          icon: <GiTennisRacket size={18} className="text-lime-600" />,
           subroutes: [
             {label: 'ATP Tour', path: '/sports/tennis/atp'},
             {label: 'WTA Tour', path: '/sports/tennis/wta'},
@@ -260,65 +241,16 @@ const Sidebar = ({
           ],
         },
         {
-          label: 'Horse',
+          label: 'Horse Racing',
           path: '/sports/horse',
-          icon: (
-            <img
-              src="https://images.rajabet.fun/newtheme/common/horse-icon.png"
-              alt="horse"
-              className="h-4 w-4"
-            />
-          ),
+          icon: <FaHorseHead size={18} className="text-amber-800" />,
         },
         {
           label: 'Greyhound',
           path: '/sports/greyhound',
-          icon: (
-            <img
-              src="https://images.rajabet.fun/newtheme/common/greyhound-icon.png"
-              alt="greyhound"
-              className="h-4 w-4"
-            />
-          ),
+          icon: <FaDog size={18} className="text-amber-900" />,
         },
       ],
-    },
-    {
-      label: 'Casino',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/casino-icon.png"
-          alt="casino"
-          className="h-5 w-5"
-        />
-      ),
-      subroutes: [
-        {label: 'Live Casino', path: '/casino/live'},
-        {label: 'Slots', path: '/casino/slots'},
-        {label: 'Table Games', path: '/casino/table'},
-      ],
-    },
-    {
-      label: 'Supports',
-      path: '/support',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/support-icon.png"
-          alt="support"
-          className="h-5 w-5"
-        />
-      ),
-    },
-    {
-      label: "FAQ's",
-      path: '/faq',
-      icon: (
-        <img
-          src="https://images.rajabet.fun/newtheme/common/faq-icon.png"
-          alt="faq"
-          className="h-5 w-5"
-        />
-      ),
     },
   ];
 
@@ -326,7 +258,7 @@ const Sidebar = ({
 
   const isActive = (itemPath: string) => {
     if (itemPath === '/') return pathname === itemPath;
-    return pathname.startsWith(itemPath);
+    return pathname === itemPath || pathname.startsWith(itemPath + '/');
   };
 
   const isSubrouteActive = (subroutePath: string) => {
@@ -336,10 +268,11 @@ const Sidebar = ({
   // Recursive function to render nested subroutes
   const renderSubRoutes = (subroutes: SubMenuItem[], level: number = 0) => {
     const marginLeft = level === 0 ? 'ml-6' : 'ml-4';
+    const paddingLeft = level === 0 ? 'pl-2' : 'pl-4';
 
     return (
       <ul
-        className={`tree-node-group border-gray-200 space-y-0.5 border-l pl-2 ${marginLeft}`}
+        className={`tree-node-group space-y-0.5 border-l border-stroke ${marginLeft} ${paddingLeft}`}
       >
         {subroutes.map((subroute) => {
           const hasSubRoutes =
@@ -355,22 +288,24 @@ const Sidebar = ({
                 className="tree-branch-wrapper"
               >
                 <button
-                  onClick={() => toggleSubmenu(subroute.label)}
+                  onClick={(e) => toggleSubmenu(subroute.label, e)}
                   className={`tree-node tree-node__branch flex w-full items-center justify-between rounded-lg px-2 py-2 text-xs font-medium transition-colors ${
                     isSubActive
-                      ? 'text-orange-600'
+                      ? 'bg-orange-50 text-orange-600'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="treeview-icon inline-flex h-4 w-4 items-center justify-center">
-                      <i
-                        className={`fa fa-${isExpanded ? 'minus' : 'plus'}-square text-gray-500 text-xs`}
-                      ></i>
-                    </span>
+                    {subroute.icon && (
+                      <span className="inline-flex h-5 w-5 items-center justify-center">
+                        {subroute.icon}
+                      </span>
+                    )}
                     <span className="innertext">{subroute.label}</span>
                   </div>
-                  <i className="fa fa-caret-down text-gray-400 text-xs transition-transform duration-300"></i>
+                  <MdExpandMore
+                    className={`text-gray-400 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                  />
                 </button>
 
                 <AnimatePresence>
@@ -379,6 +314,7 @@ const Sidebar = ({
                       initial={{height: 0, opacity: 0}}
                       animate={{height: 'auto', opacity: 1}}
                       exit={{height: 0, opacity: 0}}
+                      transition={{duration: 0.2}}
                       className="overflow-hidden"
                     >
                       {subroute.subroutes &&
@@ -398,13 +334,18 @@ const Sidebar = ({
             >
               <Link
                 to={subroute.path}
-                onClick={handleLinkClick}
+                onClick={() => handleLinkClick(subroute.path)}
                 className={`tree-node tree-node__leaf flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors ${
                   isSubActive
-                    ? 'tree-node--selected bg-orange-50 font-medium text-orange-600'
+                    ? 'tree-node--selected bg-orange-100 font-medium text-orange-600'
                     : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
                 }`}
               >
+                {subroute.icon && (
+                  <span className="inline-flex h-4 w-4 items-center justify-center">
+                    {subroute.icon}
+                  </span>
+                )}
                 <span className="innertext">{subroute.label}</span>
               </Link>
             </li>
@@ -426,15 +367,21 @@ const Sidebar = ({
       return (
         <li key={item.label} className="w-full">
           <button
-            onClick={() => toggleSubmenu(item.label)}
-            className={`group flex w-full items-center justify-between px-3 py-2.5 transition-all duration-200 ${
+            onClick={(e) => {
+              if (isActuallyCollapsed && !isMobileDevice) {
+                // Don't expand submenu when collapsed
+                return;
+              }
+              toggleSubmenu(item.label, e);
+            }}
+            className={`group flex w-full items-center justify-between rounded-lg px-3 py-2.5 transition-all duration-200 ${
               isItemActive || isAnySubrouteActive
                 ? 'active bg-gradient-to-r from-orange-500 to-red-600 text-white'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
           >
             <div className="flex items-center gap-3">
-              <span className="sports-icon sideiconbg inline-flex h-6 w-6 items-center justify-center">
+              <span className="inline-flex h-6 w-6 items-center justify-center">
                 {item.icon}
               </span>
               {(!isActuallyCollapsed || isMobileDevice) && (
@@ -444,11 +391,9 @@ const Sidebar = ({
               )}
             </div>
             {(!isActuallyCollapsed || isMobileDevice) && (
-              <span className="sidearrow">
-                <i
-                  className={`fa fa-caret-down text-xs transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-                ></i>
-              </span>
+              <MdExpandMore
+                className={`text-gray-400 text-base transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+              />
             )}
           </button>
 
@@ -458,6 +403,7 @@ const Sidebar = ({
                 initial={{height: 0, opacity: 0}}
                 animate={{height: 'auto', opacity: 1}}
                 exit={{height: 0, opacity: 0}}
+                transition={{duration: 0.2}}
                 className="sidetree overflow-hidden"
               >
                 {item.subroutes && renderSubRoutes(item.subroutes, 0)}
@@ -472,14 +418,14 @@ const Sidebar = ({
       <li key={item.label} className="w-full">
         <Link
           to={item.path!}
-          onClick={handleLinkClick}
-          className={`group flex w-full items-center gap-3 px-3 py-2.5 transition-all duration-200 ${
+          onClick={() => handleLinkClick(item.path!)}
+          className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200 ${
             isActive(item.path!)
               ? 'active bg-gradient-to-r from-orange-500 to-red-600 text-white'
               : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <span className="sports-icon sideiconbg inline-flex h-6 w-6 items-center justify-center">
+          <span className="inline-flex h-6 w-6 items-center justify-center">
             {item.icon}
           </span>
           {(!isCollapsed || isMobileDevice) && (
@@ -530,44 +476,61 @@ const Sidebar = ({
             : 'translate-x-0'
         }`}
       >
-        <ul className="space-y-1 px-2 py-3">
-          {menuItems.map(renderMenuItem)}
-
-          {/* Download APK Button */}
-          <li className="mb-2 mt-2">
-            <button className="loginbtn w-full rounded-lg bg-gradient-to-r from-orange-500 to-red-600 px-3 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90">
-              Download APK
-            </button>
-          </li>
-
-          {/* Dark Theme Toggle */}
-          <li className="mb-2 mt-2">
-            <div className="align-items-baseline flex w-full items-center justify-between rounded-lg px-3 py-2.5">
-              <div className="align-items-center flex w-3/4 items-center gap-3">
-                <span className="sports-icon casino sideiconbg inline-flex h-6 w-6 items-center justify-center">
-                  <img
-                    alt="darkmode"
-                    src="https://images.rajabet.fun/newtheme/common/darktheme-icon.png"
-                    className="h-5 w-5 object-contain"
-                  />
+        {/* Logo Header */}
+        <div className="border-b border-stroke px-4 py-4">
+          {isCollapsed && !isMobileDevice ? (
+            <div className="flex justify-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-orange-500 to-red-600">
+                <span className="font-serif text-lg font-bold text-white">
+                  F
                 </span>
-                <span className="text-gray-700 text-sm">Dark Theme</span>
-              </div>
-              <div className="form-check form-switch">
-                <input
-                  className="form-check-input switch-bigger bg-gray-300 h-5 w-9 cursor-pointer rounded-full transition-colors checked:bg-orange-500"
-                  id="mySwitch"
-                  type="checkbox"
-                  checked={isDarkMode}
-                  onChange={(e) => setIsDarkMode(e.target.checked)}
-                />
               </div>
             </div>
-          </li>
-        </ul>
+          ) : (
+            <div>
+              <h1 className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text font-serif text-xl font-bold text-transparent">
+                Fairexch
+              </h1>
+              <p className="text-gray-400 mt-1 text-[8px] uppercase tracking-[0.2em]">
+                Online Betting Platform
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Collapse Toggle Button */}
+        {!isMobileDevice && !isTablet && (
+          <button
+            onClick={toggleCollapse}
+            className="absolute -right-3 top-20 z-10 rounded-full bg-orange-500 p-1 text-white shadow-md transition-all hover:bg-orange-600"
+          >
+            {isCollapsed ? (
+              <MdChevronRight size={16} />
+            ) : (
+              <MdChevronLeft size={16} />
+            )}
+          </button>
+        )}
+
+        {/* Navigation - with proper scrolling */}
+        <div className="scrollbar-hide flex-1 overflow-y-auto py-4">
+          <ul className="space-y-1 px-2">{menuItems.map(renderMenuItem)}</ul>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="space-y-3 border-t border-stroke p-4">
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="text-gray-600 flex w-full items-center justify-center gap-2 rounded-lg py-2 text-sm font-medium transition-all hover:bg-red-50 hover:text-red-600"
+          >
+            <MdLogout size={18} />
+            {(!isCollapsed || isMobileDevice) && <span>Logout</span>}
+          </button>
+        </div>
       </aside>
 
-      {/* CSS for sidebar styles matching HTML */}
+      {/* CSS for sidebar styles */}
       <style>{`
         .sidebar {
           background-color: #ffffff;
@@ -587,17 +550,6 @@ const Sidebar = ({
           cursor: pointer;
         }
         
-        .form-check-input:checked {
-          background-color: #ff7e00;
-          border-color: #ff7e00;
-        }
-        
-        .form-check-input {
-          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-          background-repeat: no-repeat;
-          background-position: center;
-        }
-        
         /* Custom scrollbar */
         .sidebar::-webkit-scrollbar {
           width: 4px;
@@ -612,13 +564,17 @@ const Sidebar = ({
           border-radius: 4px;
         }
         
-        .sidebar::-webkit-scrollbar-thumb:hover {
-          background: #ff4500;
+        .scrollbar-hide::-webkit-scrollbar {
+          width: 4px;
         }
         
-        /* Animation for tree nodes */
-        .tree-node-group {
-          transition: all 0.3s ease;
+        .scrollbar-hide::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar-thumb {
+          background: #ff7e00;
+          border-radius: 4px;
         }
       `}</style>
     </>
