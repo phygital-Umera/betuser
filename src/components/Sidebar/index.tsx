@@ -27,7 +27,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [pathname, setPathname] = useState('/');
   
   const sidebarRoutes = [
-    { label: 'Home', path: '/', icon: <Home size={22} /> },
+    { label: 'Homeee', path: '/', icon: <Home size={22} /> },
     { label: 'In-Play', path: '/in-play', icon: <Play size={22} /> },
     { label: 'Election', path: '/election', icon: <Vote size={22} /> },
     { label: 'IPL 2026', path: '/ipl', icon: <Trophy size={22} /> },
