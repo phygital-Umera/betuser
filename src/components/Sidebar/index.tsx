@@ -145,7 +145,7 @@ const Sidebar = ({
     window.location.href = '/signin';
   };
 
-  // Simplified menu structure - only Home, In-Play, and Sports with subroutes
+  // Menu structure - Only Home, In-Play, and Sports with subroutes
   const allMenuItems: MenuItem[] = [
     {
       label: 'Home',
@@ -168,16 +168,16 @@ const Sidebar = ({
           subroutes: [
             {
               label: 'Indian Premier League',
-              path: '/cricket/indian',
+              path: '/sports/cricket/ipl/overview',
               icon: <MdEmojiEvents size={16} className="text-yellow-600" />,
               subroutes: [
                 {
                   label: 'Indian Premier League',
-                  path: '/sports/cricket/ipl/overview',
+                  path: '/cricket/indian',
                 },
                 {
                   label: 'Rajasthan Royals v Delhi Capitals',
-                  path: '/sports/cricket/ipl/rr-vs-dc',
+                  path: '/cricket/cricketevent2',
                 },
                 {
                   label: 'Chennai Super Kings v Mumbai Indians',
@@ -217,7 +217,6 @@ const Sidebar = ({
         },
         {
           label: 'Soccer',
-          path: '/sports/soccer',
           icon: <FaFutbol size={18} className="text-gray-700" />,
           subroutes: [
             {label: 'Italian Serie A', path: '/sports/soccer/serie-a'},
@@ -232,7 +231,6 @@ const Sidebar = ({
         },
         {
           label: 'Tennis',
-          path: '/sports/tennis',
           icon: <GiTennisRacket size={18} className="text-lime-600" />,
           subroutes: [
             {label: 'ATP Tour', path: '/sports/tennis/atp'},
