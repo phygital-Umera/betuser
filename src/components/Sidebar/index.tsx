@@ -149,12 +149,12 @@ const Sidebar = ({
   const allMenuItems: MenuItem[] = [
     {
       label: 'Home',
-      path: '/',
+      path: '/route/home',
       icon: <MdHome size={22} className="text-orange-500" />,
     },
     {
       label: 'In-Play',
-      path: '/in-play',
+      path: '/play/play',
       icon: <MdPlayArrow size={22} className="text-red-500" />,
     },
     {
