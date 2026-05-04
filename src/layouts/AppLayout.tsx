@@ -1,57 +1,63 @@
+import React, { useState, useEffect } from 'react';
+import { Outlet } from '@tanstack/react-router';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
-import { Outlet } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import BottomNav from './BottomNav';
 
-const AppLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+export default function AppLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Check screen size
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
     };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Get dynamic padding for content
-  const getContentPadding = () => {
-    if (isMobile) return 'p-3';
-    if (isCollapsed) return 'p-4 md:p-5';
-    return 'p-4 md:p-6 lg:p-8';
-  };
-
-  // Get margin left
   const getMarginLeft = () => {
     if (isMobile) return 'ml-0';
-    if (isCollapsed) return 'ml-20';
-    return 'ml-64';
+    return isCollapsed ? 'ml-20' : 'ml-64';
+  };
+
+  const getPaddingBottom = () => {
+    return isMobile ? 'pb-[72px]' : 'pb-0';
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex h-screen overflow-hidden">
+    <div className="h-screen overflow-hidden bg-[#F5F5F5] selection:bg-orange-500 selection:text-white">
+      <Header 
+        sidebarOpen={sidebarOpen} 
+        setSidebarOpen={setSidebarOpen} 
+      />
+      
+      <div className="flex relative h-[calc(100vh-6rem)] lg:h-[calc(100vh-6rem)]">
         <Sidebar 
           sidebarOpen={sidebarOpen} 
           setSidebarOpen={setSidebarOpen}
           onCollapseChange={setIsCollapsed}
+          isMobile={isMobile}
         />
         
-        <div className={`relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden transition-all duration-300 ${getMarginLeft()}`}>
-          {/* <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
-          <main className="flex-1">
-            <div className={getContentPadding()}>
-              <Outlet />
-            </div>
-          </main>
-        </div>
+        <main 
+          className={`flex-1 transition-all duration-300 overflow-y-auto ${getMarginLeft()} ${getPaddingBottom()}`}
+        >
+          {/* Removed all padding and margin from here */}
+          <Outlet />
+        </main>
       </div>
+
+      {/* Bottom Navigation - Only visible on mobile */}
+      {isMobile && <BottomNav />}
     </div>
   );
-};
-
-export default AppLayout;
+}

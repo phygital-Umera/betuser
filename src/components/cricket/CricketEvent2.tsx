@@ -104,7 +104,7 @@ export default function CricketEvent2() {
         </div>
       </header>
 
-      <main className="flex flex-col lg:flex-row gap-4 p-4 max-w-[1600px] mx-auto">
+      <main className="flex flex-col lg:flex-row gap-4 p-4">
         {/* Left Column: Markets */}
         <div className="flex-1 flex flex-col gap-4 overflow-hidden">
           

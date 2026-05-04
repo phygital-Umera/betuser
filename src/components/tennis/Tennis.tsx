@@ -1,259 +1,124 @@
-import React, {useState} from 'react';
-import {ChevronDown, ChevronUp, Search, Info} from 'lucide-react';
-import {motion, AnimatePresence} from 'framer-motion';
+import React, { useState } from 'react';
+import { ChevronDown, Info } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface OddsValue {
   price: string;
   size: string;
 }
 
-interface TeamOdds {
+interface TennisOdds {
   id: string;
   name: string;
   back: [OddsValue, OddsValue, OddsValue];
   lay: [OddsValue, OddsValue, OddsValue];
 }
 
-const TEAMS_DATA: TeamOdds[] = [
+const MATCH_ODDS_DATA: TennisOdds[] = [
   {
     id: '1',
-    name: 'Mumbai Indians',
+    name: 'Katherine Sebov',
     back: [
-      {price: '2498', size: ''},
-      {price: '2499', size: ''},
-      {price: '2500', size: ''},
+      { price: '1.29', size: '276.83' },
+      { price: '1.30', size: '279.83' },
+      { price: '1.31', size: '5.95' },
     ],
     lay: [
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-      {price: '0', size: ''},
+      { price: '1.46', size: '10.85' },
+      { price: '1.47', size: '76.74' },
+      { price: '1.48', size: '28.49' },
     ],
   },
   {
     id: '2',
-    name: 'Royal Challengers Bengaluru',
+    name: 'Dalila Jakupovic',
     back: [
-      {price: '318', size: ''},
-      {price: '319', size: ''},
-      {price: '320', size: ''},
+      { price: '3.10', size: '13.60' },
+      { price: '3.15', size: '35.81' },
+      { price: '3.20', size: '4.95' },
     ],
     lay: [
-      {price: '360', size: ''},
-      {price: '361', size: ''},
-      {price: '362', size: ''},
-    ],
-  },
-  {
-    id: '3',
-    name: 'Punjab Kings',
-    back: [
-      {price: '238', size: ''},
-      {price: '239', size: ''},
-      {price: '240', size: ''},
-    ],
-    lay: [
-      {price: '270', size: ''},
-      {price: '271', size: ''},
-      {price: '272', size: ''},
-    ],
-  },
-  {
-    id: '4',
-    name: 'Gujarat Titans',
-    back: [
-      {price: '1098', size: ''},
-      {price: '1099', size: ''},
-      {price: '1100', size: ''},
-    ],
-    lay: [
-      {price: '1300', size: ''},
-      {price: '1301', size: ''},
-      {price: '1302', size: ''},
-    ],
-  },
-  {
-    id: '5',
-    name: 'Sunrisers Hyderabad',
-    back: [
-      {price: '448', size: ''},
-      {price: '449', size: ''},
-      {price: '450', size: ''},
-    ],
-    lay: [
-      {price: '500', size: ''},
-      {price: '501', size: ''},
-      {price: '502', size: ''},
-    ],
-  },
-  {
-    id: '6',
-    name: 'Lucknow Super Giants',
-    back: [
-      {price: '9998', size: ''},
-      {price: '9999', size: ''},
-      {price: '10000', size: ''},
-    ],
-    lay: [
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-    ],
-  },
-  {
-    id: '7',
-    name: 'Delhi Capitals',
-    back: [
-      {price: '3498', size: ''},
-      {price: '3499', size: ''},
-      {price: '3500', size: ''},
-    ],
-    lay: [
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-    ],
-  },
-  {
-    id: '8',
-    name: 'Kolkata Knight Riders',
-    back: [
-      {price: '7998', size: ''},
-      {price: '7999', size: ''},
-      {price: '8000', size: ''},
-    ],
-    lay: [
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-    ],
-  },
-  {
-    id: '9',
-    name: 'Chennai Super Kings',
-    back: [
-      {price: '2198', size: ''},
-      {price: '2199', size: ''},
-      {price: '2200', size: ''},
-    ],
-    lay: [
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-      {price: '0', size: ''},
-    ],
-  },
-  {
-    id: '10',
-    name: 'Rajasthan Royals',
-    back: [
-      {price: '473', size: ''},
-      {price: '474', size: ''},
-      {price: '475', size: ''},
-    ],
-    lay: [
-      {price: '550', size: ''},
-      {price: '551', size: ''},
-      {price: '552', size: ''},
+      { price: '4.30', size: '1.81' },
+      { price: '4.40', size: '82.68' },
+      { price: '4.50', size: '79.36' },
     ],
   },
 ];
 
-const WINNER_DATA: TeamOdds[] = [
+const SET_BETTING_DATA: TennisOdds[] = [
   {
-    id: 'w1',
-    name: 'Punjab Kings',
+    id: '1',
+    name: 'Katherine Sebov to win 1st Set',
     back: [
-      {price: '3.3', size: '231.43'},
-      {price: '3.35', size: '222.88'},
-      {price: '3.4', size: '310.24'},
+      { price: '1.85', size: '124.50' },
+      { price: '1.86', size: '98.30' },
+      { price: '1.87', size: '45.20' },
     ],
     lay: [
-      {price: '3.45', size: '546.42'},
-      {price: '3.5', size: '764.42'},
-      {price: '3.55', size: '330.93'},
+      { price: '1.88', size: '67.80' },
+      { price: '1.89', size: '112.40' },
+      { price: '1.90', size: '89.30' },
     ],
   },
   {
-    id: 'w2',
-    name: 'Royal Challengers Bengaluru',
+    id: '2',
+    name: 'Dalila Jakupovic to win 1st Set',
     back: [
-      {price: '4.1', size: '200.06'},
-      {price: '4.2', size: '173.38'},
-      {price: '4.3', size: '279.29'},
+      { price: '2.10', size: '87.60' },
+      { price: '2.11', size: '54.20' },
+      { price: '2.12', size: '32.10' },
     ],
     lay: [
-      {price: '4.5', size: '1.3K'},
-      {price: '4.6', size: '212.25'},
-      {price: '4.7', size: '174.68'},
-    ],
-  },
-  {
-    id: 'w3',
-    name: 'Sunrisers Hyderabad',
-    back: [
-      {price: '5.4', size: '128.13'},
-      {price: '5.5', size: '186.54'},
-      {price: '5.6', size: '351.23'},
-    ],
-    lay: [
-      {price: '5.7', size: '1.1K'},
-      {price: '5.8', size: '1.3K'},
-      {price: '5.9', size: '458.90'},
-    ],
-  },
-  {
-    id: 'w4',
-    name: 'Rajasthan Royals',
-    back: [
-      {price: '5.6', size: '43.88'},
-      {price: '5.8', size: '1.1K'},
-      {price: '5.9', size: '1.2K'},
-    ],
-    lay: [
-      {price: '6', size: '52.90'},
-      {price: '6.2', size: '1.1K'},
-      {price: '6.4', size: '82.54'},
+      { price: '2.13', size: '45.80' },
+      { price: '2.14', size: '78.90' },
+      { price: '2.15', size: '92.40' },
     ],
   },
 ];
 
-export default function IndianPremium() {
-  const [isBookmakerOpen, setIsBookmakerOpen] = useState(true);
-  const [isWinnerOpen, setIsWinnerOpen] = useState(true);
+export default function Tennis() {
+  const [isMatchOddsOpen, setIsMatchOddsOpen] = useState(true);
+  const [isSetBettingOpen, setIsSetBettingOpen] = useState(true);
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] font-sans text-[#333]">
       {/* Top Banner Header */}
-      <header className="top-0 z-50 flex items-center justify-between bg-[#2C110C] px-4 py-2 text-sm font-semibold text-white">
+      <header className="sticky top-0 z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-[#2C110C] px-4 py-2 text-sm font-semibold text-white gap-2">
         <div className="flex items-center gap-2">
-          <span>Indian Premier League - Indian Premier League</span>
+          <span>Kat Sebov v Jakupovic - WTA Istanbul 2026</span>
         </div>
         <div className="flex items-center gap-4">
-          <span>28/03/2026 19:30</span>
+          <span>04/05/2026 12:30</span>
         </div>
       </header>
 
       <div className="mx-auto flex max-w-[1600px] flex-col gap-4 p-4 lg:flex-row">
         {/* Main Content Area */}
         <main className="flex-1 space-y-4">
-          {/* Market Section: IPL Winner Cup Bookmaker */}
+          {/* Market Section: Match Odds */}
           <section className="border-gray-200 overflow-hidden rounded border bg-white shadow-sm">
             <header
               className="flex cursor-pointer select-none items-center justify-between bg-[#ED6B31] px-4 py-2 text-white"
-              onClick={() => setIsBookmakerOpen(!isBookmakerOpen)}
+              onClick={() => setIsMatchOddsOpen(!isMatchOddsOpen)}
             >
               <h2 className="text-base font-bold uppercase tracking-tight">
-                IPL Winner Cup Bookmaker
+                Match Odds
               </h2>
-              <motion.div
-                animate={{rotate: isBookmakerOpen ? 0 : 180}}
-                transition={{duration: 0.2}}
-              >
-                <ChevronDown size={20} />
-              </motion.div>
+              <div className="flex items-center gap-2">
+                <button className="bg-black text-green-400 px-3 py-0.5 rounded text-[10px] font-bold hover:bg-gray-800 transition-colors">
+                  Cash Out
+                </button>
+                <motion.div
+                  animate={{rotate: isMatchOddsOpen ? 0 : 180}}
+                  transition={{duration: 0.2}}
+                >
+                  <ChevronDown size={20} />
+                </motion.div>
+              </div>
             </header>
 
             <AnimatePresence>
-              {isBookmakerOpen && (
+              {isMatchOddsOpen && (
                 <motion.div
                   initial={{height: 0}}
                   animate={{height: 'auto'}}
@@ -261,7 +126,7 @@ export default function IndianPremium() {
                   className="overflow-hidden"
                 >
                   <div className="text-gray-500 flex items-center justify-between border-b bg-[#F8F9FA] px-4 py-1 text-[10px] font-medium">
-                    <div>Min 100.00 | Max: 25000.00</div>
+                    <div>Min 100.00 | Max: 10000.00</div>
                     <div className="flex gap-1 md:gap-0">
                       <div className="flex w-[180px] md:w-[240px]">
                         <div className="flex-1 rounded-bl rounded-tl bg-[#72BBF4] py-1 text-center text-white">
@@ -275,19 +140,19 @@ export default function IndianPremium() {
                   </div>
 
                   <div className="divide-gray-100 divide-y">
-                    {TEAMS_DATA.map((team) => (
+                    {MATCH_ODDS_DATA.map((player) => (
                       <div
-                        key={team.id}
+                        key={player.id}
                         className="hover:bg-gray-50 flex items-stretch transition-colors"
                       >
                         <div className="flex flex-1 items-center px-4 py-3 text-sm font-bold">
-                          {team.name}
+                          {player.name}
                         </div>
                         <div className="flex">
                           <div className="flex w-[180px] md:w-[240px]">
                             {/* Back Column */}
                             <div className="flex flex-1 gap-[2px] p-[2px]">
-                              {team.back.map((odds, idx) => (
+                              {player.back.map((odds, idx) => (
                                 <button
                                   key={`back-${idx}`}
                                   className={`flex min-h-[44px] flex-1 flex-col items-center justify-center transition-all hover:bg-opacity-80 ${idx === 2 ? 'bg-[#72BBF4]' : 'bg-[#E0F0FE]'}`}
@@ -303,7 +168,7 @@ export default function IndianPremium() {
                             </div>
                             {/* Lay Column */}
                             <div className="flex flex-1 gap-[2px] p-[2px]">
-                              {team.lay.map((odds, idx) => (
+                              {player.lay.map((odds, idx) => (
                                 <button
                                   key={`lay-${idx}`}
                                   className={`flex min-h-[44px] flex-1 flex-col items-center justify-center transition-all hover:bg-opacity-80 ${idx === 0 ? 'bg-[#FAA9BA]' : 'bg-[#FEEBF0]'}`}
@@ -327,17 +192,17 @@ export default function IndianPremium() {
             </AnimatePresence>
           </section>
 
-          {/* Market Section: Winner */}
+          {/* Market Section: Set Betting */}
           <section className="border-gray-200 overflow-hidden rounded border bg-white shadow-sm">
             <header
               className="flex cursor-pointer select-none items-center justify-between bg-[#ED6B31] px-4 py-2 text-white"
-              onClick={() => setIsWinnerOpen(!isWinnerOpen)}
+              onClick={() => setIsSetBettingOpen(!isSetBettingOpen)}
             >
               <h2 className="text-base font-bold uppercase tracking-tight">
-                Winner
+                Set Betting
               </h2>
               <motion.div
-                animate={{rotate: isWinnerOpen ? 0 : 180}}
+                animate={{rotate: isSetBettingOpen ? 0 : 180}}
                 transition={{duration: 0.2}}
               >
                 <ChevronDown size={20} />
@@ -345,7 +210,7 @@ export default function IndianPremium() {
             </header>
 
             <AnimatePresence>
-              {isWinnerOpen && (
+              {isSetBettingOpen && (
                 <motion.div
                   initial={{height: 0}}
                   animate={{height: 'auto'}}
@@ -353,13 +218,13 @@ export default function IndianPremium() {
                   className="overflow-hidden"
                 >
                   <div className="text-gray-500 flex items-center justify-between border-b bg-[#F8F9FA] px-4 py-1 text-[10px] font-medium">
-                    <div>Min 0.00 | Max: 0.00</div>
+                    <div>Min 100.00 | Max: 10000.00</div>
                     <div className="flex gap-1 md:gap-0">
                       <div className="flex w-[180px] md:w-[240px]">
-                        <div className="flex-1 rounded-bl rounded-tl bg-[#72BBF4] py-1 text-center font-bold text-white">
+                        <div className="flex-1 rounded-bl rounded-tl bg-[#72BBF4] py-1 text-center text-white">
                           Back
                         </div>
-                        <div className="ml-[2px] flex-1 rounded-br rounded-tr bg-[#FAA9BA] py-1 text-center font-bold text-white">
+                        <div className="ml-[2px] flex-1 rounded-br rounded-tr bg-[#FAA9BA] py-1 text-center text-white">
                           Lay
                         </div>
                       </div>
@@ -367,43 +232,41 @@ export default function IndianPremium() {
                   </div>
 
                   <div className="divide-gray-100 divide-y">
-                    {WINNER_DATA.map((team) => (
+                    {SET_BETTING_DATA.map((market) => (
                       <div
-                        key={team.id}
-                        className="hover:bg-gray-50 border-gray-100 flex items-stretch border-b transition-colors"
+                        key={market.id}
+                        className="hover:bg-gray-50 flex items-stretch transition-colors"
                       >
                         <div className="flex flex-1 items-center px-4 py-3 text-sm font-bold">
-                          {team.name}
+                          {market.name}
                         </div>
                         <div className="flex">
                           <div className="flex w-[180px] md:w-[240px]">
-                            {/* Back Column */}
                             <div className="flex flex-1 gap-[2px] p-[2px]">
-                              {team.back.map((odds, idx) => (
+                              {market.back.map((odds, idx) => (
                                 <button
                                   key={`back-${idx}`}
-                                  className={`flex min-h-[48px] flex-1 flex-col items-center justify-center transition-all hover:bg-opacity-80 ${idx === 2 ? 'bg-[#72BBF4]' : 'bg-[#E0F0FE]'}`}
+                                  className={`flex min-h-[44px] flex-1 flex-col items-center justify-center transition-all hover:bg-opacity-80 ${idx === 2 ? 'bg-[#72BBF4]' : 'bg-[#E0F0FE]'}`}
                                 >
                                   <span className="text-xs font-bold">
                                     {odds.price}
                                   </span>
-                                  <span className="text-gray-600 text-[9px] font-bold">
+                                  <span className="text-gray-600 text-[9px] leading-tight">
                                     {odds.size}
                                   </span>
                                 </button>
                               ))}
                             </div>
-                            {/* Lay Column */}
                             <div className="flex flex-1 gap-[2px] p-[2px]">
-                              {team.lay.map((odds, idx) => (
+                              {market.lay.map((odds, idx) => (
                                 <button
                                   key={`lay-${idx}`}
-                                  className={`flex min-h-[48px] flex-1 flex-col items-center justify-center transition-all hover:bg-opacity-80 ${idx === 0 ? 'bg-[#FAA9BA]' : 'bg-[#FEEBF0]'}`}
+                                  className={`flex min-h-[44px] flex-1 flex-col items-center justify-center transition-all hover:bg-opacity-80 ${idx === 0 ? 'bg-[#FAA9BA]' : 'bg-[#FEEBF0]'}`}
                                 >
                                   <span className="text-xs font-bold">
                                     {odds.price}
                                   </span>
-                                  <span className="text-gray-600 text-[9px] font-bold">
+                                  <span className="text-gray-600 text-[9px] leading-tight">
                                     {odds.size}
                                   </span>
                                 </button>
@@ -418,6 +281,14 @@ export default function IndianPremium() {
               )}
             </AnimatePresence>
           </section>
+
+          {/* Info Message */}
+          <div className="bg-white rounded border border-gray-200 p-3 shadow-sm">
+            <div className="flex items-center gap-2 text-red-600 font-bold text-[10px] md:text-xs">
+              <Info size={14} />
+              <span>WRONG TRADE BETS ONLY PROFIT BETS VOID HOGI</span>
+            </div>
+          </div>
         </main>
 
         {/* Sidebar */}
@@ -433,14 +304,14 @@ export default function IndianPremium() {
             </div>
           </div>
 
-          {/* Quick Help/Info card could go here */}
+          {/* Quick Help/Info card */}
           <div className="border-gray-200 rounded border bg-white p-4 shadow-sm">
             <div className="mb-2 flex items-center gap-2 text-[#ED6B31]">
               <Info size={18} />
               <h3 className="font-bold">Rules & Info</h3>
             </div>
             <p className="text-gray-600 text-xs leading-relaxed">
-              Place your bets on the IPL outcome. Back (Blue) means you think it
+              Place your bets on the tennis match outcome. Back (Blue) means you think it
               will happen. Lay (Pink) means you think it won't. Odd values are
               updated periodically based on market liquidity.
             </p>

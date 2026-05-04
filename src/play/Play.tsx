@@ -1,290 +1,169 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import {motion} from 'framer-motion';
+import {Monitor, Info} from 'lucide-react';
 
-import React from 'react';
-import { Tv } from 'lucide-react';
-
-interface Odds {
-  back: string;
-  lay: string;
-  isYellow?: boolean;
-}
-
-interface Match {
+interface EventData {
   id: string;
-  title: string;
+  name: string;
   isLive: boolean;
-  hasTv: boolean;
-  logoType?: 'bm' | 'f';
-  odds: {
-    one: Odds;
-    x: Odds | null;
-    two: Odds;
-  };
+  hasVideo?: boolean;
+  hasBM?: boolean;
+  oddsX: {back: string; lay: string};
+  odds1: {back: string; lay: string};
+  odds2: {back: string; lay: string};
 }
 
-const cricketMatches: Match[] = [
-  {
-    id: 'c1',
-    title: 'Indian Premier League',
-    isLive: true,
-    hasTv: false,
-    logoType: 'bm',
-    odds: {
-      one: { back: '2500', lay: '0' },
-      x: { back: '240', lay: '270' },
-      two: { back: '320', lay: '360' }
-    }
-  },
-  {
-    id: 'c2',
-    title: 'Leicestershire v Nottinghamshire',
-    isLive: true,
-    hasTv: true,
-    logoType: 'f',
-    odds: {
-      one: { back: '5.8', lay: '10.5' },
-      x: null,
-      two: { back: '1.11', lay: '1.21' }
-    }
-  },
-  {
-    id: 'c3',
-    title: 'Middlesex v Durham',
-    isLive: true,
-    hasTv: true,
-    logoType: 'f',
-    odds: {
-      one: { back: '1.5', lay: '3' },
-      x: null,
-      two: { back: '1.5', lay: '3' }
-    }
-  },
-  {
-    id: 'c4',
-    title: 'Surrey v Sussex',
-    isLive: true,
-    hasTv: true,
-    logoType: 'f',
-    odds: {
-      one: { back: '1.12', lay: '1.14' },
-      x: null,
-      two: { back: '8', lay: '9.4' }
-    }
-  }
-];
+const LiveBadge = () => (
+  <span className="flex items-center gap-1 rounded bg-[#BD2130] px-1 py-0.5 text-[10px] font-bold uppercase leading-none text-white">
+    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+    Live
+  </span>
+);
 
-const tennisMatches: Match[] = [
-  {
-    id: 't1',
-    title: 'Arnaldi v Borges',
-    isLive: true,
-    hasTv: true,
-    odds: {
-      one: { back: '2.02', lay: '2.04', isYellow: true },
-      x: null,
-      two: { back: '1.96', lay: '1.97', isYellow: true }
-    }
-  },
-  {
-    id: 't2',
-    title: 'Sorribes Tormo v Ele Pridankina',
-    isLive: true,
-    hasTv: true,
-    odds: {
-      one: { back: '2.44', lay: '2.48' },
-      x: null,
-      two: { back: '1.68', lay: '1.69' }
-    }
-  },
-  {
-    id: 't3',
-    title: 'Martin Tiffon v Coppejans',
-    isLive: true,
-    hasTv: true,
-    odds: {
-      one: { back: '1.47', lay: '1.51' },
-      x: null,
-      two: { back: '2.98', lay: '3.15' }
-    }
-  },
-  {
-    id: 't4',
-    title: 'Jes Ponchet v Golubic',
-    isLive: true,
-    hasTv: true,
-    odds: {
-      one: { back: '4.5', lay: '4.7' },
-      x: null,
-      two: { back: '1.27', lay: '1.28' }
-    }
-  },
-  {
-    id: 't5',
-    title: 'Neumayer v Djere',
-    isLive: true,
-    hasTv: true,
-    odds: {
-      one: { back: '1.94', lay: '1.96' },
-      x: null,
-      two: { back: '2.04', lay: '2.08' }
-    }
-  }
-];
-
-const LogoIcon = ({ type }: { type: 'bm' | 'f' }) => {
-  if (type === 'bm') {
-    return (
-      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-cyan-600 rounded flex items-center justify-center text-[8px] sm:text-[10px] text-white font-bold">
-        BM
-      </div>
-    );
-  }
-  return (
-    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-purple-700 rounded flex items-center justify-center text-[8px] sm:text-[10px] text-white font-bold italic">
-      F
-    </div>
-  );
-};
-
-const SectionHeader = ({ title }: { title: string }) => (
-  <div className="bg-[#ec4d16] text-white px-2 py-1 text-sm sm:text-base font-semibold sticky top-0 z-10">
-    {title}
+const Indicator = ({label}: {label: string}) => (
+  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#8E8E93] text-[10px] font-bold text-white">
+    {label}
   </div>
 );
 
-const ColumnLabel = ({ label }: { label: string }) => (
-  <div className="flex flex-col items-center">
-    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-500 rounded-full flex items-center justify-center text-[8px] sm:text-[10px] text-white font-bold mb-1">
-      {label}
-    </div>
-  </div>
-);
-
-const OddsButton = ({ value, type, isYellow }: { value: string; type: 'back' | 'lay'; isYellow?: boolean }) => {
-  const bgColor = isYellow 
-    ? 'bg-[#ffee58] text-black' 
-    : type === 'back' 
-      ? 'bg-[#73c2fb] text-black' 
-      : 'bg-[#f48fb1] text-black';
-  
+const OddsButton = ({value, type}: {value: string; type: 'back' | 'lay'}) => {
+  const bgColor = type === 'back' ? 'bg-[#72BBDB]' : 'bg-[#F4A79D]';
   return (
-    <div className={`${bgColor} w-12 sm:w-16 h-8 sm:h-10 flex items-center justify-center text-xs sm:text-sm font-bold rounded-sm cursor-pointer hover:opacity-80 transition-opacity`}>
-      {value}
-    </div>
+    <button
+      id={`odds-${value}-${type}`}
+      className={`${bgColor} text-gray-900 flex h-[32px] w-[60px] cursor-pointer flex-col items-center justify-center rounded-sm border border-white/20 font-bold shadow-sm transition-all hover:brightness-95 md:h-[36px] md:w-[70px]`}
+      aria-label={`${type} odds ${value}`}
+    >
+      <span className="text-[13px] leading-none">{value || '-'}</span>
+    </button>
   );
 };
 
-const MatchRow: React.FC<{ match: Match }> = ({ match }) => (
-  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-100 py-3 px-2 sm:px-4 bg-white gap-3 sm:gap-0">
-    <div className="flex items-center gap-2 flex-grow w-full sm:w-auto">
-      {match.isLive && (
-        <span className="bg-red-600 text-white text-[8px] sm:text-[10px] font-bold px-1 rounded uppercase whitespace-nowrap">Live</span>
+const EventRow = ({event}: {event: EventData}) => (
+  <motion.div
+    initial={{opacity: 0, y: 10}}
+    animate={{opacity: 1, y: 0}}
+    className="border-gray-200 hover:bg-gray-50 flex items-center justify-between border-b bg-white py-2 transition-colors"
+  >
+    <div className="flex items-center gap-2 pl-2">
+      {event.isLive && <LiveBadge />}
+      <span className="text-gray-900 max-w-[150px] truncate text-[13px] font-bold md:max-w-none">
+        {event.name}
+      </span>
+    </div>
+
+    <div className="flex items-center gap-2 pr-2">
+      {event.hasBM && (
+        <div className="border-gray-300 flex h-6 w-6 items-center justify-center rounded-md border bg-[#002D4E] text-[8px] font-bold text-white">
+          BM
+        </div>
       )}
-      <span className="font-bold text-xs sm:text-sm text-gray-800 break-words flex-1">{match.title}</span>
-    </div>
-
-    <div className="flex items-center gap-1 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
-      <div className="flex items-center gap-2 sm:mr-4">
-        {match.logoType && <LogoIcon type={match.logoType} />}
-        {match.hasTv && (
-          <div className="bg-green-700 p-0.5 sm:p-1 rounded">
-             <Tv size={14} color="white" className="sm:w-4 sm:h-4" />
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-3 gap-0.5 sm:gap-1">
-        {/* Column 1 */}
-        <div className="flex gap-0.5 sm:gap-1">
-          <OddsButton value={match.odds.one.back} type="back" isYellow={match.odds.one.isYellow} />
-          <OddsButton value={match.odds.one.lay} type="lay" isYellow={match.odds.one.isYellow} />
+      {event.hasVideo && (
+        <div className="border-gray-300 flex h-6 w-6 items-center justify-center rounded-md border bg-[#000] text-green-500">
+          <Monitor size={14} fill="currentColor" />
         </div>
+      )}
 
-        {/* Column X */}
-        <div className="flex gap-0.5 sm:gap-1">
-          {match.odds.x ? (
-            <>
-              <OddsButton value={match.odds.x.back} type="back" />
-              <OddsButton value={match.odds.x.lay} type="lay" />
-            </>
-          ) : (
-            <>
-              <div className="w-12 sm:w-16 h-8 sm:h-10 bg-[#73c2fb]/30 rounded-sm" />
-              <div className="w-12 sm:w-16 h-8 sm:h-10 bg-[#f48fb1]/30 rounded-sm" />
-            </>
-          )}
+      <div className="flex gap-1">
+        <div className="flex gap-0.5">
+          <OddsButton value={event.odds1.back} type="back" />
+          <OddsButton value={event.odds1.lay} type="lay" />
         </div>
-
-        {/* Column 2 */}
-        <div className="flex gap-0.5 sm:gap-1">
-          <OddsButton value={match.odds.two.back} type="back" isYellow={match.odds.two.isYellow} />
-          <OddsButton value={match.odds.two.lay} type="lay" isYellow={match.odds.two.isYellow} />
+        <div className="flex gap-0.5">
+          <OddsButton value={event.oddsX.back} type="back" />
+          <OddsButton value={event.oddsX.lay} type="lay" />
+        </div>
+        <div className="flex gap-0.5">
+          <OddsButton value={event.odds2.back} type="back" />
+          <OddsButton value={event.odds2.lay} type="lay" />
         </div>
       </div>
     </div>
-  </div>
+  </motion.div>
 );
 
-function Play() {
+const SportSection = ({
+  title,
+  events,
+  showIndicators = true,
+}: {
+  title: string;
+  events: EventData[];
+  showIndicators?: boolean;
+}) => (
+  <section className="mb-4">
+    <div className="flex min-h-[40px] items-center justify-between bg-[#F15A24] px-3 py-1 text-white">
+      <h2 className="text-sm font-bold">{title}</h2>
+      {showIndicators && (
+        <div className="flex gap-12 pr-4 md:pr-12">
+          <Indicator label="1" />
+          <Indicator label="X" />
+          <Indicator label="2" />
+        </div>
+      )}
+    </div>
+
+    <div className="bg-white">
+      {events.length > 0 ? (
+        events.map((event) => (
+          <div key={event.id}>
+            <EventRow event={event} />
+          </div>
+        ))
+      ) : (
+        <div className="text-gray-900 flex items-center justify-center bg-white py-12 text-sm font-medium">
+          No Active Events Found
+        </div>
+      )}
+    </div>
+  </section>
+);
+
+export default function Play() {
+  const cricketEvents: EventData[] = [
+    {
+      id: 'cricket-1',
+      name: 'Indian Premier League',
+      isLive: true,
+      hasBM: true,
+      odds1: {back: '6500', lay: '0'},
+      oddsX: {back: '250', lay: '280'},
+      odds2: {back: '280', lay: '310'},
+    },
+  ];
+
+  const soccerEvents: EventData[] = [];
+
+  const tennisEvents: EventData[] = [
+    {
+      id: 'tennis-1',
+      name: 'Kat Sebov v Jakupovic',
+      isLive: true,
+      hasVideo: true,
+      odds1: {back: '1.19', lay: '1.41'},
+      oddsX: {back: '', lay: ''},
+      odds2: {back: '3.45', lay: '6.6'},
+    },
+  ];
+
   return (
-    <div className="bg-gray-100 min-h-screen font-sans pt-5">
-      <div className="shadow-lg overflow-hidden">
-        {/* Cricket Section */}
-        <div className="mb-0">
-          <SectionHeader title="Cricket" />
-          {/* Legend Headers for Odds */}
-          <div className="flex justify-end pr-2 sm:pr-4 py-2 bg-white border-b border-gray-100">
-             <div className="grid grid-cols-3 gap-0.5 sm:gap-1 w-[calc(100%-120px)] sm:w-[412px] min-w-[200px] sm:min-w-[412px]">
-               <ColumnLabel label="1" />
-               <ColumnLabel label="X" />
-               <ColumnLabel label="2" />
-             </div>
-          </div>
-          <div>
-            {cricketMatches.map((match) => (
-              <MatchRow key={match.id} match={match} />
-            ))}
-          </div>
+    <div className="min-h-screen bg-[#F0F0F0] p-2 font-sans selection:bg-orange-100 md:p-4">
+      <div >
+        <div className="min-w-[800px]">
+          <SportSection title="Cricket" events={cricketEvents} />
+          <SportSection
+            title="Soccer"
+            events={soccerEvents}
+            showIndicators={false}
+          />
+          <SportSection title="Tennis" events={tennisEvents} />
         </div>
+      </div>
 
-        {/* Soccer Section */}
-        <div className="mb-0">
-          <SectionHeader title="Soccer" />
-          <div className="bg-white py-8 sm:py-12 flex items-center justify-center text-base sm:text-lg font-medium text-gray-800 border-b border-gray-100 px-4">
-            No Active Events Found
-          </div>
-        </div>
-
-        {/* Tennis Section */}
-        <div className="mb-0">
-          <SectionHeader title="Tennis" />
-          <div className="flex justify-end pr-2 sm:pr-4 py-2 bg-white border-b border-gray-100">
-             <div className="grid grid-cols-3 gap-0.5 sm:gap-1 w-[calc(100%-120px)] sm:w-[412px] min-w-[200px] sm:min-w-[412px]">
-               <ColumnLabel label="1" />
-               <ColumnLabel label="X" />
-               <ColumnLabel label="2" />
-             </div>
-          </div>
-          <div>
-            {tennisMatches.map((match) => (
-              <MatchRow key={match.id} match={match} />
-            ))}
-          </div>
-        </div>
-
-        {/* Horse Racing Section - Empty as per original */}
-        <div className="mb-0">
-          <SectionHeader title="Horse Racing" />
-          <div className="bg-white py-8 sm:py-12 flex items-center justify-center text-base sm:text-lg font-medium text-gray-800 border-b border-gray-100 px-4">
-            No Active Events Found
-          </div>
-        </div>
+      {/* Mobile hint if screen is too small and not scrolling nicely */}
+      <div className="text-gray-500 mt-4 text-center text-xs md:hidden">
+        <Info size={12} className="mr-1 inline" />
+        Scroll horizontally to view all odds
       </div>
     </div>
   );
 }
-
-export default Play;
